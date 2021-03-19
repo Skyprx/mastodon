@@ -8,7 +8,7 @@ class StatusesController < ApplicationController
 
   layout 'public'
 
-  before_action :require_signature!, only: :show, if: -> { request.format == :json && authorized_fetch_mode? }
+  before_action :require_signature!, only: [:show, :activity], if: -> { request.format == :json && authorized_fetch_mode? }
   before_action :set_status
   before_action :set_instance_presenter
   before_action :set_link_headers
@@ -19,7 +19,7 @@ class StatusesController < ApplicationController
   before_action :set_autoplay, only: :embed
 
   skip_around_action :set_locale, if: -> { request.format == :json }
-  skip_before_action :require_functional!, only: [:show, :embed]
+  skip_before_action :require_functional!, only: [:show, :embed], unless: :whitelist_mode?
 
   content_security_policy only: :embed do |p|
     p.frame_ancestors(false)
